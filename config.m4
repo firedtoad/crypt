@@ -1,21 +1,9 @@
-dnl $Id$
-dnl config.m4 for extension crypt
+PHP_ARG_WITH(crypt, for crypt support,
+[  --with-crypt             Include crypt support])
 
-dnl Comments in this file start with the string 'dnl'.
-dnl Remove where necessary. This file will not work
-dnl without editing.
 
-dnl If your extension references something external, use with:
-
-dnl PHP_ARG_WITH(crypt, for crypt support,
-dnl Make sure that the comment is aligned:
-dnl [  --with-crypt             Include crypt support])
-
-dnl Otherwise use enable:
-
-dnl PHP_ARG_ENABLE(crypt, whether to enable crypt support,
-dnl Make sure that the comment is aligned:
-dnl [  --enable-crypt           Enable crypt support])
+PHP_ARG_ENABLE(crypt, whether to enable crypt support,
+[  --enable-crypt           Enable crypt support])
 
 if test "$PHP_CRYPT" != "no"; then
   dnl Write more examples of tests here...
