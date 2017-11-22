@@ -59,5 +59,5 @@ if test "$PHP_CRYPT" != "no"; then
   dnl
   dnl PHP_SUBST(CRYPT_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(crypt, crypt.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  PHP_NEW_EXTENSION(crypt, crypt.c php_crypt.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
