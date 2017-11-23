@@ -231,7 +231,7 @@ PHP_FUNCTION(tohex)
 
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(data)
-		ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_END();
 
 	result = php_bin2hex((unsigned char *)ZSTR_VAL(data), ZSTR_LEN(data));
 
@@ -248,7 +248,7 @@ PHP_FUNCTION(fromhex)
 
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(data)
-		ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_END();
 
 	result = php_hex2bin((unsigned char *)ZSTR_VAL(data), ZSTR_LEN(data));
 
@@ -259,10 +259,10 @@ PHP_FUNCTION(fromhex)
 }
 
 
-void read64(zend_string *data, zend_string *sec, uint32_t xx[2], uint32_t yy[2])
+void read64(uint8_t *data, uint8_t *sec, uint32_t xx[2], uint32_t yy[2])
 {
-	uint8_t *x = data->val;
-	uint8_t *y = sec->val;
+	uint8_t *x = data;
+	uint8_t *y = sec;
 	xx[0] = x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 	xx[1] = x[4] | x[5] << 8 | x[6] << 16 | x[7] << 24;
 	yy[0] = y[0] | y[1] << 8 | y[2] << 16 | y[3] << 24;
@@ -296,14 +296,19 @@ uint8_t* push64(uint8_t tmp[8], uint64_t r)
 }
 PHP_FUNCTION(hmac64)
 {
-	zend_string *data = NULL;
-	zend_string *sec = NULL;
-	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_STR(data)
-		Z_PARAM_STR(sec)
-		ZEND_PARSE_PARAMETERS_END();
+	//zend_string *data = NULL;
+	//zend_string *sec = NULL;
+	int argc = ZEND_NUM_ARGS();
+	zval *data = NULL, *sec = NULL;
+	if (zend_parse_parameters(argc, "zz", &data, &sec) == FAILURE)
+		return;
+	//ZEND_PARSE_PARAMETERS_START(1, 2)
+	//	Z_PARAM_STR(data)
+	//	Z_PARAM_STR(sec)
+	//ZEND_PARSE_PARAMETERS_END();
+
 	uint32_t xx[2], yy[2];
-	read64(data, sec, xx, yy);
+	read64(Z_STR_P(data)->val, Z_STR_P(sec)->val, xx, yy);
 	uint32_t result[2];
 	hmac(xx, yy, result);
 	uint8_t tmp[8];
@@ -313,14 +318,16 @@ PHP_FUNCTION(hmac64)
 
 PHP_FUNCTION(hmac64_md5)
 {
-	zend_string *data = NULL;
-	zend_string *sec = NULL;
-	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_STR(data)
-		Z_PARAM_STR(sec)
-		ZEND_PARSE_PARAMETERS_END();
+	int argc = ZEND_NUM_ARGS();
+	zval *data = NULL, *sec = NULL;
+	if (zend_parse_parameters(argc, "zz", &data, &sec) == FAILURE)
+		return;
+	//ZEND_PARSE_PARAMETERS_START(1, 2)
+	//	Z_PARAM_STR(data)
+	//	Z_PARAM_STR(sec)
+	//ZEND_PARSE_PARAMETERS_END();
 	uint32_t xx[2], yy[2];
-	read64(data, sec, xx, yy);
+	read64(Z_STR_P(data)->val, Z_STR_P(sec)->val, xx, yy);
 	uint32_t result[2];
 	hmac_md5(xx, yy, result);
 	uint8_t tmp[8];
@@ -349,14 +356,17 @@ PHP_FUNCTION(dhexchange)
 
 PHP_FUNCTION(dhsecret)
 {
-	zend_string *data = NULL;
-	zend_string *sec = NULL;
-	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_STR(data)
-		Z_PARAM_STR(sec)
-	ZEND_PARSE_PARAMETERS_END();
+	int argc = ZEND_NUM_ARGS();
+	zval *data = NULL, *sec = NULL;
+	if (zend_parse_parameters(argc, "zz", &data, &sec ) == FAILURE)
+		return;
+	//ZEND_PARSE_PARAMETERS_START(1, 2)
+	//	Z_PARAM_STR(data)
+	//	Z_PARAM_STR(sec)
+	//ZEND_PARSE_PARAMETERS_END();
 	uint32_t x[2], y[2];
-	read64(data, sec, x, y);
+
+	read64(Z_STR_P(data)->val, Z_STR_P(sec)->val, x, y);
 	uint64_t xx = (uint64_t)x[0] | (uint64_t)x[1] << 32;
 	uint64_t yy = (uint64_t)y[0] | (uint64_t)y[1] << 32;
 	uint64_t r = powmodp(xx, yy);
@@ -367,18 +377,22 @@ PHP_FUNCTION(dhsecret)
 
 PHP_FUNCTION(hmac_hash)
 {
-	zend_string *xkey = NULL;
-	zend_string *xtext = NULL;
-	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_STR(xkey)
-		Z_PARAM_STR(xtext)
-	ZEND_PARSE_PARAMETERS_END();
+
+
+	int argc = ZEND_NUM_ARGS();
+	zval *xkey = NULL, *xtext = NULL;
+	if (zend_parse_parameters(argc, "zz", &xkey, &xtext) == FAILURE)
+		return;
+	//ZEND_PARSE_PARAMETERS_START(1, 2)
+	//	Z_PARAM_STR(xkey)
+	//	Z_PARAM_STR(xtext)
+	//ZEND_PARSE_PARAMETERS_END();
 	uint32_t key[2];
-	uint8_t *x = xkey->val;
+	uint8_t *x = Z_STR_P(xkey)->val;
 	key[0] = x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
 	key[1] = x[4] | x[5] << 8 | x[6] << 16 | x[7] << 24;
 	uint8_t h[8];
-	Hash(xtext->val, (int)xtext->len, h);
+	Hash(Z_STR_P(xtext)->val, (int)Z_STR_P(xtext)->len, h);
 	uint32_t htext[2];
 	htext[0] = h[0] | h[1] << 8 | h[2] << 16 | h[3] << 24;
 	htext[1] = h[4] | h[5] << 8 | h[6] << 16 | h[7] << 24;
