@@ -333,7 +333,7 @@ PHP_FUNCTION(dhexchange)
 {
 	zend_string *data = NULL;
 
-	ZEND_PARSE_PARAMETERS_START(1, 2)
+	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(data)
 	ZEND_PARSE_PARAMETERS_END();
 	uint32_t xx[2];
