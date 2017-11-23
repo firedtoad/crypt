@@ -460,3 +460,65 @@ uint64_t powmodp(uint64_t a, uint64_t b)
 		a %= P;
 	return pow_mod_p(a, b);
 }
+
+void digest_md5(uint32_t w[16], uint32_t result[4]) {
+	uint32_t a, b, c, d, f, g, temp;
+	int i;
+
+	a = 0x67452301u;
+	b = 0xefcdab89u;
+	c = 0x98badcfeu;
+	d = 0x10325476u;
+
+	for (i = 0; i<64; i++) {
+		if (i < 16) {
+			f = (b & c) | ((~b) & d);
+			g = i;
+		}
+		else if (i < 32) {
+			f = (d & b) | ((~d) & c);
+			g = (5 * i + 1) % 16;
+		}
+		else if (i < 48) {
+			f = b ^ c ^ d;
+			g = (3 * i + 5) % 16;
+		}
+		else {
+			f = c ^ (b | (~d));
+			g = (7 * i) % 16;
+		}
+
+		temp = d;
+		d = c;
+		c = b;
+		b = b + LEFTROTATE((a + f + k[i] + w[g]), r[i]);
+		a = temp;
+	}
+
+	result[0] = a;
+	result[1] = b;
+	result[2] = c;
+	result[3] = d;
+}
+
+void hmac_md5(uint32_t x[2], uint32_t y[2], uint32_t result[2]) {
+	uint32_t w[16];
+	uint32_t r[4];
+	int i;
+	for (i = 0; i<12; i += 4) {
+		w[i] = x[0];
+		w[i + 1] = x[1];
+		w[i + 2] = y[0];
+		w[i + 3] = y[1];
+	}
+
+	w[12] = 0x80;
+	w[13] = 0;
+	w[14] = 384;
+	w[15] = 0;
+
+	digest_md5(w, r);
+
+	result[0] = (r[0] + 0x67452301u) ^ (r[2] + 0x98badcfeu);
+	result[1] = (r[1] + 0xefcdab89u) ^ (r[3] + 0x10325476u);
+}

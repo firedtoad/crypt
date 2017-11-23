@@ -12,5 +12,6 @@ void hmac(uint32_t x[2], uint32_t y[2], uint32_t result[2]);
 uint64_t mul_mod_p(uint64_t a, uint64_t b);
 uint64_t pow_mod_p(uint64_t a, uint64_t b);
 uint64_t powmodp(uint64_t a, uint64_t b);
+void hmac_md5(uint32_t x[2], uint32_t y[2], uint32_t result[2]);
 #endif 
 

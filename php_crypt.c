@@ -301,15 +301,33 @@ PHP_FUNCTION(hmac64)
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_STR(data)
 		Z_PARAM_STR(sec)
-	ZEND_PARSE_PARAMETERS_END();
+		ZEND_PARSE_PARAMETERS_END();
 	uint32_t xx[2], yy[2];
-	read64(data,sec,xx,yy);
+	read64(data, sec, xx, yy);
 	uint32_t result[2];
 	hmac(xx, yy, result);
 	uint8_t tmp[8];
-	put64(tmp,result);
-	RETURN_STRINGL(tmp,8);
+	put64(tmp, result);
+	RETURN_STRINGL(tmp, 8);
 }
+
+PHP_FUNCTION(hmac64_md5)
+{
+	zend_string *data = NULL;
+	zend_string *sec = NULL;
+	ZEND_PARSE_PARAMETERS_START(1, 2)
+		Z_PARAM_STR(data)
+		Z_PARAM_STR(sec)
+		ZEND_PARSE_PARAMETERS_END();
+	uint32_t xx[2], yy[2];
+	read64(data, sec, xx, yy);
+	uint32_t result[2];
+	hmac_md5(xx, yy, result);
+	uint8_t tmp[8];
+	put64(tmp, result);
+	RETURN_STRINGL(tmp, 8);
+}
+
 
 PHP_FUNCTION(dhexchange)
 {
@@ -450,6 +468,7 @@ const zend_function_entry crypt_functions[] = {
 	PHP_FE(tohex,NULL)
 	PHP_FE(fromhex,NULL)
 	PHP_FE(hmac64,NULL)
+	PHP_FE(hmac64_md5,NULL)
 	PHP_FE(dhexchange,NULL)
 	PHP_FE(dhsecret,NULL)
 	PHP_FE(hmac_hash,NULL)
