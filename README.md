@@ -1,6 +1,6 @@
 # crypt
 skynet client login service need some crypt functions 
-
+```php
 <?php
 include 'crypt.php';
 $fd=fsockopen('127.0.0.1:8001');
@@ -156,3 +156,4 @@ $res=recv_response($v);
 print_r($res);
 
 
+```
